@@ -6,7 +6,7 @@
 
 import os
 import joblib
-import numpy
+import numpy as np
 import matplotlib.pyplot as plt
 import sys
 sys.path.append(os.path.abspath("../tools/"))
@@ -38,13 +38,15 @@ data_dict = joblib.load( open("../final_project/final_project_dataset.pkl", "rb"
 ### there's an outlier--remove it! 
 data_dict.pop("TOTAL", 0)
 
-
 ### the input features we want to use 
 ### can be any key in the person-level dictionary (salary, director_fees, etc.) 
 feature_1 = "salary"
 feature_2 = "exercised_stock_options"
+
+# Quiz 2
+feature_3 = "total_payments"
 poi  = "poi"
-features_list = [poi, feature_1, feature_2]
+features_list = [poi, feature_1, feature_2, feature_3]
 data = featureFormat(data_dict, features_list )
 poi, finance_features = targetFeatureSplit( data )
 
@@ -53,13 +55,16 @@ poi, finance_features = targetFeatureSplit( data )
 ### you'll want to change this line to 
 ### for f1, f2, _ in finance_features:
 ### (as it's currently written, the line below assumes 2 features)
-for f1, f2 in finance_features:
+for f1, f2, _ in finance_features:
     plt.scatter( f1, f2 )
 plt.show()
 
 ### cluster here; create predictions of the cluster labels
 ### for the data and store them to a list called pred
-
+# Quiz 1
+from sklearn.cluster import KMeans
+kmeans = KMeans(n_clusters=2).fit(finance_features)
+pred = kmeans.predict(finance_features)
 
 
 
@@ -69,3 +74,20 @@ try:
     Draw(pred, finance_features, poi, mark_poi=False, name="clusters.pdf", f1_name=feature_1, f2_name=feature_2)
 except NameError:
     print("No predictions object named pred found, no clusters to plot")
+
+# Quiz 3 & 4
+stocklist = []
+salarylist = []
+for item in data_dict:
+    salary = data_dict[item][feature_1]
+    stock = data_dict[item][feature_2]
+    if stock != 'NaN':
+        stocklist.append(stock)
+    if salary != 'NaN':
+        salarylist.append(salary)
+
+print("stock max:", np.max(stocklist))
+print("stock min:", np.min(stocklist))
+print("salary max:", np.max(salarylist))
+print("salary min:", np.min(salarylist))
+
