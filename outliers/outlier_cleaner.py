@@ -1,5 +1,5 @@
 #!/usr/bin/python
-
+import math
 
 def outlierCleaner(predictions, ages, net_worths):
     """
@@ -15,6 +15,14 @@ def outlierCleaner(predictions, ages, net_worths):
 
     ### your code goes here
 
-    
+    # zip packes up all objects into a tuple - list
+    cleaned_data = zip(ages, net_worths, abs(net_worths-predictions))
+    # sort based on error
+    cleaned_data = sorted(cleaned_data, key=lambda x: (x[2]))
+    # calculate the number of elements that need to drop
+    cleaned_data_count = int(math.ceil(len(cleaned_data)*0.9))
+    # slice
+    cleaned_data = cleaned_data[:cleaned_data_count]
+
     return cleaned_data
 
